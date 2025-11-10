@@ -8,7 +8,11 @@ const connectDB = require("./config/db");
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cors());
+const { globalErrorHandler } = require('./middlewares/errorHandling');
+app.use(globalErrorHandler);
 
+const user = require("./routes/user");
+app.use('/user', user);
 connectDB();
 
 const PORT = process.env.PORT || 3000;
