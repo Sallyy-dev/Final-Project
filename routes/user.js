@@ -17,9 +17,11 @@ router.post(
   },
   userController.Register
 );
+
 router.post('/login', userController.Login);
-router.post("/logout", userController.Logout);
+router.post('/logout', userController.Logout);
 router.post('/forgot-password', userController.forgetPassword);
-router.post('/reset-password/:token', userController.resetPassword);
-router.get('/profile', userController.getProfile)
+router.post('/reset-password', userController.resetPassword); // يستخدم query param token
+router.get('/profile', userController.getProfile);
+
 module.exports = router;

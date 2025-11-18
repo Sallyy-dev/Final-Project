@@ -12,7 +12,13 @@ const { globalErrorHandler } = require('./middlewares/errorHandling');
 app.use(globalErrorHandler);
 
 const user = require("./routes/user");
+const menueCategory = require("./routes/category");
+const Item = require("./routes/cateItem");
+const order = require("./routes/order")
 app.use('/user', user);
+app.use("/cate", menueCategory);
+app.use("/cateItems", Item);
+app.use("/order" ,order )
 connectDB();
 
 const PORT = process.env.PORT || 3000;

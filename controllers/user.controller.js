@@ -2,12 +2,13 @@ const validator = require("validator");
 const User = require("../models/user");
 const bcrypt = require("bcryptjs");
 const { generateTokens } = require('../utils/user');
-const { sendEmail } = require('../utils/sendEmail');
+const sendEmail  = require('../utils/sendEmail');
+const jwt = require('jsonwebtoken');
 
 // Register
 const Register = async (req, res) => {
   try {
-    const { userName, email, password, confirmPassword } = req.body;
+    const { userName, email, password, confirmPassword , role } = req.body;
 
     if (!validator.isEmail(email)) {
       return res.status(400).json({ success: false, message: "Please enter a valid email" });
@@ -30,7 +31,8 @@ const Register = async (req, res) => {
     const user = new User({
       userName,
       email,
-      password: hashPassword
+      password: hashPassword,
+      role: role || 'user',  
     });
 
     const newUser = await user.save();
@@ -48,7 +50,8 @@ const Register = async (req, res) => {
       user: {
         id: newUser._id,
         userName: newUser.userName,
-        email: newUser.email
+        email: newUser.email,
+        role: newUser.role
       },
       accessToken
     });
@@ -82,7 +85,8 @@ const Login = async (req, res) => {
       user: {
         id: user._id,
         userName: user.userName,
-        email: user.email
+        email: user.email,
+        role: user.role,
       },
       accessToken,
     });
@@ -107,35 +111,42 @@ const Logout = async (req, res) => {
 };
 
 
-const forgetPassword = async(req,res)=>{
-  try{
-    const {email} =req.body;
-    const user = await User.findOne({email});
-      if (!user){
-return res.status(404).json({ message: 'User not found' });
-      } 
+const forgetPassword = async (req, res) => {
+  try {
+    const { email } = req.body;
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
 
-      const { accessToken} = generateTokens(user);
-      const resetLink = `http://localhost:3000/reset-password/${accessToken}`;
-      await sendEmail(email, 'Password Reset', `Click here: ${resetLink}`);
+    const { accessToken } = generateTokens(user);
+const resetLink = `http://localhost:3000/user/reset-password?token=${encodeURIComponent(accessToken)}`;
 
-      res.json({ message: 'Password reset link sent to your email' });
+    await sendEmail(email, 'Password Reset', `Click here to reset your password: ${resetLink}`);
+    res.json({ message: 'Password reset link sent to your email' });
 
-
-  }
-catch (err) {
+  } catch (err) {
     res.status(500).json({ error: err.message });
   }
 };
 
-
+// Reset Password
 const resetPassword = async (req, res) => {
   try {
-    const { accessToken } = req.params;
-    const { newPassword } = req.body;
+    const { token } = req.query;
+    if (!token) return res.status(400).json({ message: 'Token is required' });
 
-    const userr = jwt.verify(accessToken, process.env.JWT_SECRET);
-    const user = await User.findById(userr.id);
+    const decoded = jwt.verify(decodeURIComponent(token), process.env.ACCESS_TOKEN_SECRET);
+    const user = await User.findById(decoded.id);
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    const { newPassword } = req.body;
+    if (!newPassword || newPassword.length < 8) {
+      return res.status(400).json({ message: 'Password must be at least 8 characters' });
+    }
 
     user.password = await bcrypt.hash(newPassword, 10);
     await user.save();
@@ -146,12 +157,11 @@ const resetPassword = async (req, res) => {
   }
 };
 
-
+// Get Profile
 const getProfile = async (req, res) => {
   const user = await User.findById(req.user.id).select('-password -refreshToken');
   res.json(user);
 };
-
 
 
 module.exports = { Register, Login, Logout,forgetPassword , resetPassword, getProfile};
