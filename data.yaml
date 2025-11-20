@@ -1,0 +1,879 @@
+openapi: 3.1.0
+info:
+  title: Api-fiddle Bookstore Example
+  version: 1.0.0
+  description: A basic example API for managing a bookstore's book collection.
+paths:
+  /books:
+    get:
+      tags:
+        - books
+      summary: Get book list
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/BookSummary"
+                title: GetBookListOk
+          description: A JSON array containing book objects.
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "500":
+          $ref: "#/components/responses/InternalServerErrror"
+      parameters:
+        - $ref: "#/components/parameters/title"
+        - $ref: "#/components/parameters/author_id"
+      description: >
+        Fetches a comprehensive list of all books available in the bookstore.
+        Each book object includes essential details such as the book's ID, name,
+        and publication date.
+
+
+        This endpoint is paginated using the 'page' syntax.
+      operationId: getBookList
+    post:
+      tags:
+        - books
+      summary: Create book
+      responses:
+        "201":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Book"
+          description: The request was successful, and a new resource was created. The URI
+            of the newly created resource can be found in the response's
+            Location header.
+        "400":
+          $ref: "#/components/responses/BadRequest"
+      description: >
+        Creates a new book entry in the bookstore. The request must include the
+        book's name and can optionally include the publication date.
+      operationId: createBook
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/BookCreate"
+        required: true
+        description: Details of the book to be created.
+      parameters: []
+  /books/{book_id}:
+    get:
+      tags:
+        - books
+      summary: Get book
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Book"
+          description: A JSON object containing the book details.
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalServerErrror"
+      parameters:
+        - $ref: "#/components/parameters/book_id"
+      description: >
+        Fetches details of a specific book by its unique identifier. The
+        response includes the book's name and publication date.
+      operationId: getBook
+    delete:
+      tags:
+        - books
+      summary: Delete book
+      responses:
+        "204":
+          content:
+            application/json:
+              schema:
+                type: "null"
+                title: DeleteBookNoContent
+          description: The request was successful, but there is no content to return in
+            the response.
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "409":
+          $ref: "#/components/responses/Conflict"
+        "500":
+          $ref: "#/components/responses/InternalServerErrror"
+      parameters:
+        - $ref: "#/components/parameters/book_id"
+      description: >
+        Deletes a specific book from the bookstore using its unique identifier.
+        The operation confirms successful deletion.
+      operationId: deleteBook
+  /user/login:
+    post:
+      operationId: userLogin
+      tags:
+        - user
+      summary: user login
+      responses:
+        "201":
+          description: The request was successful, and a new resource was created.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                required:
+                  - data
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "500":
+          $ref: "#/components/responses/InternalServerErrror"
+  /user/register:
+    post:
+      operationId: userRegister
+      tags:
+        - user
+      summary: user register
+      responses:
+        "201":
+          description: The request was successful, and a new resource was created.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                required:
+                  - data
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "500":
+          $ref: "#/components/responses/InternalServerErrror"
+  /user/logout:
+    post:
+      operationId: userLogout
+      tags:
+        - user
+      summary: user logout
+      responses:
+        "201":
+          description: The request was successful, and a new resource was created.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                required:
+                  - data
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "500":
+          $ref: "#/components/responses/InternalServerErrror"
+  /user/forgot-password:
+    post:
+      operationId: forgetPassword
+      tags:
+        - user
+      summary: forget-password
+      responses:
+        "201":
+          description: The request was successful, and a new resource was created.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                required:
+                  - data
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "500":
+          $ref: "#/components/responses/InternalServerErrror"
+  /user/reset-password:
+    post:
+      operationId: resetPassword
+      tags:
+        - user
+      summary: reset-password
+      responses:
+        "201":
+          description: The request was successful, and a new resource was created.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                required:
+                  - data
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "500":
+          $ref: "#/components/responses/InternalServerErrror"
+  /user/profile:
+    get:
+      operationId: getProfile
+      tags:
+        - user
+      summary: getProfile
+      responses:
+        "200":
+          description: The request was successful, and the server has returned the
+            requested resource in the response body.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                required:
+                  - data
+        "401":
+          description: Authentication is required to access the requested resource. The
+            client must include the appropriate credentials.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                required:
+                  - message
+        "500":
+          $ref: "#/components/responses/InternalServerErrror"
+  /cate/categories:
+    post:
+      operationId: addCategory
+      tags:
+        - category
+      summary: addCategory
+      responses:
+        "201":
+          description: The request was successful, and a new resource was created.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                required:
+                  - data
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          description: Authentication is required to access the requested resource. The
+            client must include the appropriate credentials.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                required:
+                  - message
+        "500":
+          $ref: "#/components/responses/InternalServerErrror"
+  /cate/cate-types:
+    get:
+      operationId: cateTypes
+      tags:
+        - category
+      summary: cate-types
+      responses:
+        "200":
+          description: The request was successful, and the server has returned the
+            requested resource in the response body.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                required:
+                  - data
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          description: Authentication is required to access the requested resource. The
+            client must include the appropriate credentials.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                required:
+                  - message
+        "500":
+          $ref: "#/components/responses/InternalServerErrror"
+  /cate/search:
+    get:
+      operationId: searchCategory
+      tags:
+        - category
+      summary: searchCategory
+      responses:
+        "200":
+          description: The request was successful, and the server has returned the
+            requested resource in the response body.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                required:
+                  - data
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          description: Authentication is required to access the requested resource. The
+            client must include the appropriate credentials.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                required:
+                  - message
+        "500":
+          $ref: "#/components/responses/InternalServerErrror"
+  /cate/items:
+    get:
+      operationId: cateItems
+      tags:
+        - category
+      summary: cateItems
+      responses:
+        "200":
+          description: The request was successful, and the server has returned the
+            requested resource in the response body.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                required:
+                  - data
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          description: Authentication is required to access the requested resource. The
+            client must include the appropriate credentials.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                required:
+                  - message
+        "500":
+          $ref: "#/components/responses/InternalServerErrror"
+  /cateitems:
+    post:
+      operationId: addItem
+      tags:
+        - items
+      summary: addItem
+      responses:
+        "201":
+          description: The request was successful, and a new resource was created.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                required:
+                  - data
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          description: Authentication is required to access the requested resource. The
+            client must include the appropriate credentials.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                required:
+                  - message
+        "500":
+          $ref: "#/components/responses/InternalServerErrror"
+    get:
+      operationId: getmyitem
+      tags:
+        - items
+      summary: getmyitem
+      responses:
+        "200":
+          description: The request was successful, and the server has returned the
+            requested resource in the response body.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                required:
+                  - data
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          description: Authentication is required to access the requested resource. The
+            client must include the appropriate credentials.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                required:
+                  - message
+        "500":
+          $ref: "#/components/responses/InternalServerErrror"
+    delete:
+      operationId: deleteitem
+      tags:
+        - items
+      summary: deleteitem
+      responses:
+        "204":
+          description: The request was successful, but there is no content to return in
+            the response.
+          content:
+            application/json:
+              schema:
+                type: "null"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          description: Authentication is required to access the requested resource. The
+            client must include the appropriate credentials.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                required:
+                  - message
+        "500":
+          $ref: "#/components/responses/InternalServerErrror"
+    put:
+      operationId: updateitem
+      tags:
+        - items
+      summary: updateitem
+      responses:
+        "200":
+          description: The request was successful, and the server has returned the
+            requested resource in the response body.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                required:
+                  - data
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          description: Authentication is required to access the requested resource. The
+            client must include the appropriate credentials.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                required:
+                  - message
+        "409":
+          $ref: "#/components/responses/Conflict"
+  /order:
+    post:
+      operationId: createOrder
+      tags:
+        - order
+      summary: createOrder
+      responses:
+        "201":
+          description: The request was successful, and a new resource was created.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                required:
+                  - data
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          description: Authentication is required to access the requested resource. The
+            client must include the appropriate credentials.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                required:
+                  - message
+        "500":
+          $ref: "#/components/responses/InternalServerErrror"
+    get:
+      operationId: getAllOrders
+      tags:
+        - order
+      summary: getAllOrders
+      responses:
+        "200":
+          description: The request was successful, and the server has returned the
+            requested resource in the response body.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                required:
+                  - data
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          description: Authentication is required to access the requested resource. The
+            client must include the appropriate credentials.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                required:
+                  - message
+        "500":
+          $ref: "#/components/responses/InternalServerErrror"
+  /order/my-orders:
+    get:
+      operationId: getMyOrder
+      tags:
+        - order
+      summary: getMyOrder
+      responses:
+        "200":
+          description: The request was successful, and the server has returned the
+            requested resource in the response body.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                required:
+                  - data
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          description: Authentication is required to access the requested resource. The
+            client must include the appropriate credentials.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                required:
+                  - message
+        "500":
+          $ref: "#/components/responses/InternalServerErrror"
+  /order/id/status:
+    put:
+      operationId: updateStatusOrder
+      tags:
+        - order
+      summary: updateStatusOrder
+      responses:
+        "200":
+          description: The request was successful, and the server has returned the
+            requested resource in the response body.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                required:
+                  - data
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "401":
+          description: Authentication is required to access the requested resource. The
+            client must include the appropriate credentials.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                required:
+                  - message
+        "409":
+          $ref: "#/components/responses/Conflict"
+components:
+  schemas:
+    Book:
+      type: object
+      required:
+        - id
+        - title
+        - fullText
+        - author
+      properties:
+        id:
+          type: integer
+          examples:
+            - 12
+            - 14
+        title:
+          type: string
+          examples:
+            - Pride and Prejudice
+            - Moby-Dick
+        fullText:
+          type: string
+          examples:
+            - Lorem ipsum
+        author:
+          $ref: "#/components/schemas/Author"
+    Author:
+      type: object
+      required:
+        - id
+        - name
+        - address
+        - city
+        - numberOfBooksPublished
+      properties:
+        id:
+          type: integer
+          examples:
+            - 1
+            - 2
+            - 3
+        city:
+          type: string
+          examples:
+            - New York
+            - Boston
+        name:
+          type: string
+          examples:
+            - J.K. Rowling
+            - Henry Miller
+        address:
+          type: string
+          examples:
+            - Lorem ipsum
+        numberOfBooksPublished:
+          type: string
+          examples:
+            - "1"
+            - "3"
+            - "10"
+      description: Creator of books.
+    BookCreate:
+      type: object
+      required:
+        - fullText
+        - authorId
+        - title
+      properties:
+        title:
+          type: string
+          examples:
+            - Lorem ipsum
+        authorId:
+          type: integer
+          examples:
+            - 1
+            - 2
+            - 3
+        fullText:
+          type: string
+          examples:
+            - Lorem ipsum
+      description: Data transfer object for creating a new Book.
+      x-fiddle-dto-info:
+        baseSchemaName: Book
+    BookSummary:
+      type: object
+      required:
+        - id
+        - author
+        - title
+      properties:
+        id:
+          type: number
+          examples:
+            - 1
+            - 2
+            - 3
+        title:
+          type: string
+          examples:
+            - Lorem ipsum
+        author:
+          $ref: "#/components/schemas/Author"
+      x-fiddle-dto-info:
+        baseSchemaName: Book
+  responses:
+    Conflict:
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - message
+            properties:
+              message:
+                type: string
+                examples:
+                  - Lorem ipsum
+      description: The request could not be completed due to a conflict with the
+        current state of the resource. Resolve the conflict and try again.
+    NotFound:
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - message
+            properties:
+              message:
+                type: string
+                examples:
+                  - Lorem ipsum
+      description: The server cannot find the requested resource. The endpoint may be
+        invalid or the resource may no longer exist.
+    BadRequest:
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - message
+            properties:
+              message:
+                type: string
+                examples:
+                  - Lorem ipsum
+      description: The server could not understand the request due to invalid syntax.
+        The client should modify the request and try again.
+    InternalServerErrror:
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - message
+            properties:
+              message:
+                type: string
+                examples:
+                  - Lorem ipsum
+      description: The server encountered an unexpected condition that prevented it
+        from fulfilling the request. Report the issue to the support team if it
+        persists.
+  parameters:
+    title:
+      in: query
+      name: title
+      style: form
+      schema:
+        type: string
+        examples:
+          - Pride and Prejudice
+          - Moby-Dick
+      explode: false
+      required: false
+      description: Filter the list of books according to the title.
+    author_id:
+      name: author_id
+      in: query
+      description: Filter the list of books accodring to the `author_id`.
+      schema:
+        type: integer
+        examples:
+          - 1
+          - 2
+          - 23
+      explode: false
+      style: form
+      allowReserved: false
+      allowEmptyValue: false
+    book_id:
+      name: book_id
+      in: path
+      description: Path parameter to retrieve books by.
+      schema:
+        type: integer
+        examples:
+          - 1
+          - 2
+          - 3
+      explode: false
+      style: simple
+      allowReserved: false
+      allowEmptyValue: true
+tags:
+  - name: books
+    description: Endpoints dealing with book entities.
+  - name: user
+  - name: gategory
+  - name: category
+  - name: items
+  - name: order

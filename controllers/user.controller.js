@@ -1,4 +1,3 @@
-const validator = require("validator");
 const User = require("../models/user");
 const bcrypt = require("bcryptjs");
 const { generateTokens } = require('../utils/user');
@@ -8,25 +7,14 @@ const jwt = require('jsonwebtoken');
 // Register
 const Register = async (req, res) => {
   try {
-    const { userName, email, password, confirmPassword , role } = req.body;
-
-    if (!validator.isEmail(email)) {
-      return res.status(400).json({ success: false, message: "Please enter a valid email" });
-    }
-    if (!password || password.length < 8) {
-      return res.status(400).json({ success: false, message: "Password must be at least 8 characters" });
-    }
-    if (password !== confirmPassword) {
-      return res.status(400).json({ success: false, message: "Passwords do not match" });
-    }
+    const { userName, email, password,role } = req.body;
 
     const exist = await User.findOne({ email });
     if (exist) {
       return res.status(400).json({ success: false, message: "User already exists" });
     }
 
-    const salt = await bcrypt.genSalt();
-    const hashPassword = await bcrypt.hash(password, salt);
+    const hashPassword = await bcrypt.hash(password,10);
 
     const user = new User({
       userName,

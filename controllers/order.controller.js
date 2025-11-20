@@ -1,9 +1,8 @@
 const Order = require('../models/order');
 const cateItem = require('../models/cateItem');
 
-// ============================
-// Create Order (Cash Only)
-// ============================
+
+// Create Order 
 const createOrder = async (req, res) => {
   console.log("Order request body:", req.body);
 
@@ -15,17 +14,18 @@ const createOrder = async (req, res) => {
   }
 
   // Validate delivery info
-  if (
-    !deliveryInfo?.first_name ||
-    !deliveryInfo?.last_name ||
-    !deliveryInfo?.phone_number ||
-    !deliveryInfo?.address
-  ) {
-    return res.status(400).json({ message: 'deliveryInfo incomplete' });
-  }
+if (
+  !deliveryInfo ||
+  !deliveryInfo.first_name ||
+  !deliveryInfo.last_name ||
+  !deliveryInfo.phone_number ||
+  !deliveryInfo.address
+) {
+  return res.status(400).json({ message: 'deliveryInfo incomplete' });
+}
+
 
   try {
-    // Validate each item structure
     for (const item of items) {
       if (!item.cateItem || !item.quantity || !item.size) {
         return res
@@ -49,7 +49,6 @@ const createOrder = async (req, res) => {
           .json({ message: `Product not found: ${item.cateItem}` });
       }
 
-      // override & snapshot
       item.price = product.price;    
       item.name = product.name;      
       totalPrice += product.price * item.quantity;
@@ -61,7 +60,7 @@ const createOrder = async (req, res) => {
       totalPrice,
       status: status || 'pending',
       deliveryInfo,
-      paymentMethod: "cash",     // cash only
+      paymentMethod: "cash",    
       paymentStatus: "unpaid",
       currency: 'EGP',
       date: date || new Date()
@@ -82,9 +81,7 @@ const createOrder = async (req, res) => {
 
 
 
-// ============================
-//  Get All Orders (Admin Only)
-// ============================
+//  Get All Orders
 const getAllOrders = async (req, res) => {
   try {
     const orders = await Order.find()
@@ -104,9 +101,8 @@ const getAllOrders = async (req, res) => {
 
 
 
-// ============================
+
 // Get My Orders (Customer)
-// ============================
 const getMyOrders = async (req, res) => {
   try {
     const orders = await Order.find({ customer: req.user.id })
@@ -124,10 +120,7 @@ const getMyOrders = async (req, res) => {
 };
 
 
-
-// ============================
-// Update Order Status (Admin / Delivery)
-// ============================
+// Update Order Status
 const updateOrderStatus = async (req, res) => {
   try {
     const { status } = req.body;
@@ -158,10 +151,7 @@ const updateOrderStatus = async (req, res) => {
 };
 
 
-
-// ============================
 // Cancel Order
-// ============================
 const cancelOrder = async (req, res) => {
   try {
     const { reason } = req.body;

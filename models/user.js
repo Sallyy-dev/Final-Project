@@ -22,11 +22,5 @@ password:{
 
 });
 
-userSchema.pre('save', function(next) {
-  if (this.confirmPassword && this.password !== this.confirmPassword) {
-    throw new Error('Passwords do not match');
-  }
-  next();
-});
 
 module.exports = mongoose.model("User" , userSchema)

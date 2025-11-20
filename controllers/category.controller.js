@@ -76,20 +76,10 @@ const addCategory = async (req, res) => {
   }
 };
 
-//  get all food items
-// const getAllCateItems = async (req, res) => {
-//   try {
-//     const items = await CateItem.find().populate("category", "name");
-//     res.json({ success: true, count: items.length, data: items });
-//   } catch (err) {
-//     res.status(500).json({ success: false, message: err.message });
-//   }
-// };
 
 module.exports = {
   getCateTypes,
   searchCateType,
   getItemsByType,
   addCategory
-//   getAllCateItems
 };

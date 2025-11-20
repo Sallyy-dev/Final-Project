@@ -1,8 +1,4 @@
-
 const CateItem = require('../models/cateItem');
-
-
-//  Get all food items
 
 const getAllCateItems = async (req, res) => {
   try {
@@ -13,8 +9,6 @@ const getAllCateItems = async (req, res) => {
   }
 };
 
-
-//  Create food item
 
 const createCateItem = async (req, res) => {
   const item = new CateItem({
@@ -34,9 +28,7 @@ const createCateItem = async (req, res) => {
   }
 };
 
-// =======================
-//  Update food item
-// =======================
+
 const updateCateItem = async (req, res) => {
   try {
     const updatedItem = await CateItem.findByIdAndUpdate(
@@ -54,9 +46,7 @@ const updateCateItem = async (req, res) => {
   }
 };
 
-// =======================
-//  Delete food item
-// =======================
+
 const deleteCateItem = async (req, res) => {
   try {
     const deletedItem = await CateItem.findByIdAndDelete(req.params.id);
@@ -70,9 +60,6 @@ const deleteCateItem = async (req, res) => {
   }
 };
 
-// =======================
-//  Get food item by ID
-// =======================
 const getCateItemById = async (req, res) => {
   try {
     const cateItem = await CateItem.findById(req.params.id).populate('category', 'name');

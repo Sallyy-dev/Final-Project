@@ -21,7 +21,7 @@ router.post(
 router.post('/login', userController.Login);
 router.post('/logout', userController.Logout);
 router.post('/forgot-password', userController.forgetPassword);
-router.post('/reset-password', userController.resetPassword); // يستخدم query param token
+router.post('/reset-password', userController.resetPassword); 
 router.get('/profile', userController.getProfile);
 
 module.exports = router;
